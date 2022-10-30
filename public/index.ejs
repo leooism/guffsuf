@@ -1,0 +1,79 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>replit</title>
+		<link href="/css/style.css" rel="stylesheet" />
+		<script
+			defer
+			src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"
+		></script>
+
+		<script defer>
+			const id = "<%= ROOMID %>";
+		</script>
+		<script defer src="/socket.io/socket.io.js"></script>
+		<script defer src="/scripts/script.js"></script>
+	</head>
+
+	<body>
+		<div class="video-app">
+			<div class="video-grid">
+				<div class="video-host"></div>
+				<div class="video-participant"></div>
+			</div>
+			<div class="chat-grid">
+				<div class="chat-message"></div>
+				<form action="">
+					<input type="text" placeholder="Your message" id="input-box" />
+					<button class="send-btn">Send</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
+<!-- 
+
+	
+.video-participant {
+	overflow-x: scroll;
+	position: absolute;
+	/* display: flex; */
+	width: 60%;
+	height: 100px;
+	left: 50%;
+	top: 20px;
+	transform: translateX(-50%);
+	gap: 1rem;
+}
+.video-participant::-webkit-scrollbar {
+	display: none;
+}
+.video-host {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+
+	height: 100%;
+}
+.participant {
+	display: inline-flex;
+	width: 100px;
+	margin: 0 5px;
+	height: 100px;
+	object-fit: contain;
+	background-color: red;
+	border-radius: 20px;
+	border: 1px solid red;
+}
+
+.video-host video {
+	width: 800px;
+	height: 100%;
+	
+}
+
+
+ -->
