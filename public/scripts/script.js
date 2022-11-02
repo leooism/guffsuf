@@ -40,6 +40,8 @@ const connectToNewUser = (stream, clientid) => {
 
 	call.on("stream", (remoteStream) => {
 		const video = document.createElement("video");
+		video.classList.add("mini");
+
 		onSucess(video, remoteStream);
 	});
 	call.on("close", () => {
@@ -55,6 +57,8 @@ getVideoTrack(constraints).then((stream) => {
 		call.answer(stream);
 		call.on("stream", (stream) => {
 			const video = document.createElement("video");
+			video.classList.add("mini");
+
 			onSucess(video, stream);
 		});
 	});
