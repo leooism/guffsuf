@@ -3,9 +3,7 @@
 	padding: 0;
 }
 .video-app {
-	display: grid;
-	grid-template-columns: 1.5fr 0.4fr;
-	grid-template-rows: 100vh;
+	display: flex;
 }
 
 .sender,
@@ -56,7 +54,7 @@
 }
 .chat-message {
 	overflow: scroll;
-	height: 90%;
+	height: 500px;
 }
 
 .chat-grid {
@@ -94,7 +92,27 @@ form button {
 	font-size: 15px;
 }
 .video-grid {
-	display: flex;
+	flex: 0.4;
 	position: relative;
-	flex-direction: column;
+	margin: 0 auto;
+	border: 2px solid red;
+	background-color: gray;
+}
+
+/* .video-grid video {
+	width: 300;
+	height: 300;
+} */
+.video-grid + video {
+	width: 100%;
+	height: 100%;
+}
+
+.video-grid:last-child {
+	border-radius: 20px;
+	top: 0;
+	left: 68%;
+	width: 100px;
+	position: absolute;
+	height: 200px;
 }

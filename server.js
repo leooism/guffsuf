@@ -45,11 +45,8 @@ app.get("/:roomId", (req, res) => {
 
 io.on("connection", (socket) => {
 	socket.on("join-room", (roomid, userid) => {
-		console.log("yo");
 		socket.join(roomid);
-		socket.broadcast
-			.to(roomid)
-			.emit("user-connected", userid, (type = "participant"));
+		socket.to(roomid).emit("user-connected", userid);
 		socket.on("message", (msg) => {
 			socket.to(roomid).emit("createMessage", msg);
 		});

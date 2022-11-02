@@ -11,20 +11,16 @@ const peer = new Peer(undefined, {
 	port: "3001",
 	host: "/",
 });
-const pinVideo = true;
-
 const constraints = {
 	video: true,
 	audio: false,
 };
 
-const onSucess = async (videoEle, stream, type = undefined) => {
+const onSucess = async (videoEle, stream) => {
 	videoEle.srcObject = stream;
 	videoEle.addEventListener("loadedmetadata", (e) => {
 		videoEle.play();
 	});
-	if (type === "participant") return participantGrid.appendChild(videoEle);
-	if (type === "host") return videoHost.appendChild(videoEle);
 	videoGrid.appendChild(videoEle);
 };
 
@@ -43,27 +39,22 @@ const connectToNewUser = (stream, clientid) => {
 	const call = peer.call(clientid, stream);
 
 	call.on("stream", (remoteStream) => {
-		console.log(remoteStream);
 		const video = document.createElement("video");
-		video.classList.add("participant");
 		onSucess(video, remoteStream);
-		// rootVideo.srcObject = remoteStream;
 	});
 	call.on("close", () => {
 		console.log("call is closed");
 	});
 };
 getVideoTrack(constraints).then((stream) => {
-	console.log(stream.getVideoTracks());
 	const video = document.createElement("video");
+	video.classList.add("pin");
 	onSucess(video, stream);
 
 	peer.on("call", (call) => {
 		call.answer(stream);
 		call.on("stream", (stream) => {
-			console.log(stream);
 			const video = document.createElement("video");
-			// video.classList.add("host");
 			onSucess(video, stream);
 		});
 	});
@@ -80,9 +71,7 @@ sendBtn.addEventListener("click", (e) => {
 	p.classList.add("sender-msg");
 	p.innerText = msg;
 	msgBox.appendChild(p);
-
 	chatMessage.appendChild(msgBox);
-
 	socket.emit("message", msg);
 	inputBox.value = "";
 });
