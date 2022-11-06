@@ -1,27 +1,44 @@
 const inputBox = document.querySelector("#input-box");
 const sendBtn = document.querySelector(".send-btn");
-const videoGrid = document.querySelector(".video-grid");
-const participantGrid = document.querySelector(".video-participant");
-const videoHost = document.querySelector(".video-host");
+const videoGrid = document.querySelector(".video-box");
+const participantGrid = document.querySelector(".participants");
+const chatMessage = document.querySelector(".msg-box");
+const feedback = document.querySelector(".feedback");
+const endCallBtn = document.querySelector(".end");
+const videoOffBtn = document.querySelector(".video-off");
+export const socket = io("/");
 
-const chatMessage = document.querySelector(".chat-message");
+let userId;
 
-const socket = io("/");
-const peer = new Peer(undefined, {
+inputBox.onkeydown = (e) => {
+	console.log(e.target.value.length + 1);
+	socket.emit("typing", id, e.target.value.trim().length);
+};
+
+export const peer = new Peer(undefined, {
 	port: "3001",
 	host: "/",
 });
+peer.on("open", (clientid) => {
+	userId = clientid;
+	socket.emit("join-room", id, clientid);
+});
+
 const constraints = {
 	video: true,
 	audio: false,
 };
 
-const onSucess = async (videoEle, stream) => {
+export const onSucess = async (videoEle, stream, type = undefined) => {
+	stream.getVideoTracks()[0].onended = () => {
+		videoGrid.removeChild(videoGrid.firstElementChild);
+	};
 	videoEle.srcObject = stream;
 	videoEle.addEventListener("loadedmetadata", (e) => {
 		videoEle.play();
 	});
-	videoGrid.appendChild(videoEle);
+	if (type === "participant") return participantGrid.appendChild(videoEle);
+	videoGrid.insertAdjacentElement("afterbegin", videoEle);
 };
 
 const onError = (error) => {
@@ -32,43 +49,81 @@ const getVideoTrack = async function (options) {
 	return await navigator.mediaDevices.getUserMedia(options);
 };
 
-peer.on("open", (clientid) => {
-	socket.emit("join-room", id, clientid);
-});
 const connectToNewUser = (stream, clientid) => {
 	const call = peer.call(clientid, stream);
-
-	call.on("stream", (remoteStream) => {
+	call.on("stream", () => {
 		const video = document.createElement("video");
+		video.setAttribute("user-id", clientid);
 		video.classList.add("mini");
-
-		onSucess(video, remoteStream);
+		onSucess(video, stream, "participant");
 	});
 	call.on("close", () => {
+		console.log("yoooooo");
 		console.log("call is closed");
 	});
 };
+
+const toggleStopVideo = function (videoElm) {
+	console.log(videoElm.srcObject);
+	videoElm.srcObject.getTracks().forEach((track) => {
+		console.log(track);
+		if (track.readyState === "live" && track.kind === "video") {
+			track.enabled = !track.enabled;
+		}
+	});
+};
+
+videoOffBtn.addEventListener("click", () => {
+	toggleStopVideo(document.getElementById(String(userId)));
+});
+
+function stopStreamedVideo(videoElem) {
+	const stream = videoElem.srcObject;
+	const tracks = stream.getTracks();
+	tracks.forEach((track) => {
+		track.stop();
+	});
+	videoElem.srcObject = null;
+	console.log(videoElem);
+	videoElem.remove();
+	socket.emit("disconnect-user", userId);
+}
+endCallBtn.addEventListener("click", () => {
+	stopStreamedVideo(document.getElementById(String(userId)));
+});
+
 getVideoTrack(constraints).then((stream) => {
 	const video = document.createElement("video");
+	video.setAttribute("id", userId);
 	video.classList.add("pin");
 	onSucess(video, stream);
-
 	peer.on("call", (call) => {
 		call.answer(stream);
 		call.on("stream", (stream) => {
 			const video = document.createElement("video");
 			video.classList.add("mini");
-
-			onSucess(video, stream);
+			video.setAttribute("id", call.peer);
+			onSucess(video, stream, "participant");
 		});
 	});
 	socket.on("user-connected", (id) => {
+		console.log("Yo");
 		connectToNewUser(stream, id);
 	});
 });
-sendBtn.addEventListener("click", (e) => {
-	e.preventDefault();
+socket.on("disconnect-user", (id) => {
+	console.log("disconnect user");
+	stopStreamedVideo(document.getElementById(String(id)));
+});
+
+socket.on("typing", (id, msgLength) => {
+	console.log(msgLength);
+	if (!msgLength > 0) return (feedback.innerHTML = "");
+	feedback.innerHTML = `<div class="dots-bars-4 messaging"></div>`;
+});
+const sendMessage = () => {
 	const msg = inputBox.value;
+	if (msg.trim().length === 0) return;
 	const msgBox = document.createElement("p");
 	msgBox.classList.add("sender");
 	const p = document.createElement("span");
@@ -76,18 +131,31 @@ sendBtn.addEventListener("click", (e) => {
 	p.innerText = msg;
 	msgBox.appendChild(p);
 	chatMessage.appendChild(msgBox);
-	socket.emit("message", msg);
+	socket.emit("chat", msg);
 	inputBox.value = "";
-});
-socket.on("createMessage", (msg) => {
+};
+
+const renderMessage = (msg) => {
 	const msgBox = document.createElement("p");
 	msgBox.classList.add("reciever");
 	const p = document.createElement("soab");
 	p.classList.add("reciever-msg");
 	p.innerText = msg;
 	msgBox.appendChild(p);
+
 	chatMessage.appendChild(msgBox);
+};
+sendBtn.addEventListener("click", (e) => {
+	sendMessage();
+	e.preventDefault();
 });
+
+socket.on("chat", (msg) => {
+	feedback.innerHTML = " ";
+	renderMessage(msg);
+});
+
+// console.log(shareScreen);
 
 // const getListOfInputDevices = async () => {
 // 	const devices = await navigator.mediaDevices.enumerateDevices();
@@ -111,7 +179,6 @@ socket.on("createMessage", (msg) => {
 
 
 */
-
 // const server = {
 // 	iceServers: [
 // 		{
