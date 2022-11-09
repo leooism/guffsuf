@@ -22,43 +22,46 @@ const io = new Server(httpServer, {
 // connection event listener -> handles all incoming connections form clients
 
 app.get("/", (req, res) => {
-	res.redirect(`join-room`);
+	res.redirect(`/meeting/${uuidv4()}`);
 });
-app.get("/host-meeting", (req, res) => {
-	const roomId = uuidv4();
-	rooms.push(roomId);
-	console.log(roomId);
-	res.redirect(`/${roomId}`);
-});
+// app.get("/host-meeting", (req, res) => {
+// 	const roomId = uuidv4();
+// 	rooms.push(roomId);
+// 	console.log(roomId);
+// 	res.redirect(`/${roomId}`);
+// });
 
-app.get("/join-room", (req, res) => {
-	res.render("join-room");
-});
-app.post("/join-room", (req, res) => {
-	const { fullName, roomId } = req.body;
-	const roomMatched = rooms.find((room) => room === roomId);
-	if (!roomMatched) {
-		//handle
-	}
-	res.redirect(`/${roomMatched}`);
-	req.user = fullName;
-});
-app.get("/:roomId", (req, res) => {
+// app.get("/join-room", (req, res) => {
+// 	res.render("join-room");
+// });
+// app.post("/join-room", (req, res) => {
+// 	const { fullName, roomId } = req.body;
+// 	const roomMatched = rooms.find((room) => room === roomId);
+// 	if (!roomMatched) {
+// 		//handle
+// 	}
+// 	res.redirect(`/${roomMatched}`);
+// 	req.user = fullName;
+// });
+app.get("/meeting/:roomId", (req, res) => {
 	res.render("index", { ROOMID: req.params.roomId, name: req.user });
 });
 
-/* 
-* This signaling server must do.
-* Keeping a list of connected clientsNotifying connected clients when a new client connects
-* Transmitting connection offers from one client to the other
-* Transmitting answers to connection offers
-* Exchanging IceCandidate events between clients
-* Notifying a user when a client disconnects
+app.get("/feedback", (req, res) => {
+	res.render("feedback");
+});
 
-! Signaling is the process of determining communication protocols, channels, media codecs and formats
-! method of data transfer, and routing information needed to exchange info btn peers.
+app.post("/feedback", (req, res) => {
+	//send the user feedback to database;
 
-*/
+	//redirect to home page
+
+	res.render("join-room");
+});
+
+app.use("/", (req, res) => {
+	res.json("No page found");
+});
 
 io.on("connection", (socket) => {
 	socket.on("join-room", (roomid, userid) => {
@@ -71,15 +74,12 @@ io.on("connection", (socket) => {
 		socket.on("chat", (msg) => {
 			socket.to(roomid).emit("chat", msg);
 		});
-		// socket.on("screen cast", (stream) => {
-		// 	console.log(stream);
-		// 	socket.to(roomid).emit("screenShare", stream);
-		// });
-		// socket.on("disconnect-user", (id) => {
-		// 	socket.to(roomid).emit("disconnect-user", id);
-		// });
+
+		socket.on("disconnect-user", (id) => {
+			socket.to(roomid).emit("disconnect-user", id);
+		});
 		socket.on("typing", (id, msgLength) => {
-			socket.broadcast.to(roomid).emit("typing", id, msgLength);
+			socket.to(roomid).emit("typing", id, msgLength);
 		});
 	});
 });
