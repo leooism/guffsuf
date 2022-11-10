@@ -22,10 +22,18 @@ const io = new Server(httpServer, {
 // connection event listener -> handles all incoming connections form clients
 
 app.get("/", (req, res) => {
-	res.redirect(`/meeting/${uuidv4()}`);
+	// res.redirect(`/meeting/${uuidv4()}`);
+	res.render("root");
 });
-// app.get("/host-meeting", (req, res) => {
+
+// app.post("/host-meeting", (req, res) => {
 // 	const roomId = uuidv4();
+// 	const messageOptions = {
+// 		from: "leooism10@gmail.com",
+// 		to: "xyz@gmail.com",
+// 		subject: "Invitation for meeting",
+// 		roomId,
+// 	};
 // 	rooms.push(roomId);
 // 	console.log(roomId);
 // 	res.redirect(`/${roomId}`);
@@ -60,7 +68,7 @@ app.post("/feedback", (req, res) => {
 });
 
 app.use("/", (req, res) => {
-	res.json("No page found");
+	res.render("404");
 });
 
 io.on("connection", (socket) => {
@@ -75,12 +83,15 @@ io.on("connection", (socket) => {
 			socket.to(roomid).emit("chat", msg);
 		});
 
-		socket.on("disconnect-user", (id) => {
-			socket.to(roomid).emit("disconnect-user", id);
+		socket.on("disconnect", () => {
+			socket.broadcast.to(roomid).emit("disconnected", userid);
 		});
 		socket.on("typing", (id, msgLength) => {
 			socket.to(roomid).emit("typing", id, msgLength);
 		});
+		// socket.on("video-status", (status, userId) => {
+		// 	socket.broadcast.to(roomid).emit("video-status", status, userId);
+		// });
 	});
 });
 

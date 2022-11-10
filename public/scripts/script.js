@@ -12,6 +12,8 @@ const chatBtn = document.querySelector(".chatBtn");
 let localStream;
 let remoteStream = [];
 
+const peers = {};
+
 chatBtn.addEventListener("click", () => {
 	document.querySelector(".chat-grid").classList.toggle("hide");
 });
@@ -77,17 +79,20 @@ const connectToNewUser = (stream, clientid) => {
 		onSucess(video, stream, "participant");
 	});
 	call.on("close", () => {
-		console.log("yoooooo");
-		console.log("call is closed");
+		// console.log("Hello");
+		video.remove();
 	});
+	peers[clientid] = call;
 };
 
 const toggleStopVideo = function (localStream) {
 	if (!localStream) return;
-	console.log(localStream);
+	peer.call();
 	localStream.getTracks().forEach((track) => {
+		console.log(track);
 		if (track.readyState === "live" && track.kind === "video") {
 			track.enabled = !track.enabled;
+			socket.emit("video-status", track.enabled, userId);
 			videoOn = !videoOn;
 		}
 	});
@@ -158,6 +163,9 @@ micOffOnBtn.addEventListener("click", () => {
 function leaveRoom() {
 	socket.emit("disconnect-user", userId);
 }
+socket.on("disconnected-user", (userId) => {
+	document.getElementById(String(userId)).remove();
+});
 
 endCallBtn.addEventListener("click", () => {
 	leaveRoom(document.getElementById(String(userId)));
@@ -175,13 +183,22 @@ socket.on("user-connected", async (id) => {
 	connectToNewUser(localStream, id);
 });
 
+// socket.on("video-status", (status, userId) => {
+// 	let stream = document.getElementById(String(userId)).srcObject;
+// 	stream.getTracks().forEach((track) => {
+// 		if (track.readyState === "live" && track.kind === "video") {
+// 			track.enabled = status;
+// 		}
+// 	});
+// });
+
 peer.on("call", async (call) => {
 	call.answer(localStream);
+	const video = document.createElement("video");
+	video.classList.add("mini");
 	call.on("stream", (stream) => {
-		remoteStream.push(stream);
-		const video = document.createElement("video");
-		video.classList.add("mini");
 		video.setAttribute("id", call.peer);
+		remoteStream.push(stream);
 		onSucess(video, stream, "participant");
 	});
 });
@@ -195,8 +212,9 @@ const handleUserLeft = (videoElem) => {
 	videoElem.srcObject = null;
 	videoElem.remove();
 };
-socket.on("disconnect-user", (id) => {
-	handleUserLeft(document.getElementById(String(id)));
+socket.on("disconnected", (id) => {
+	if (!peers[id]) return;
+	peers[id].destroy();
 });
 
 socket.on("typing", (id, msgLength) => {
