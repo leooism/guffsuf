@@ -1,0 +1,77 @@
+
+/* 
+*Create a RTCPeerConnection for each end of the call and 
+*at each end, add the local stream from getUserMedia()
+
+
+* Get and share network information: potential connection 
+* endpoints are known as ICE candidates
+
+* Get and share local and remote descriptions: metadata
+* about local media in SDP format.
+
+
+
+*/
+// const server = {
+// 	iceServers: [
+// 		{
+// 			url: "stun:stun.xten.com",
+// 		},
+// 		{
+// 			// Use my TURN server on DigitalOcean
+// 			url: "turn:numb.viagenie.ca",
+// 			credential: "sunghiep",
+// 			username: "nghiepnds@yahoo.com",
+// 		},
+// 	],
+// };
+// let stream;
+
+/* 
+! We should specify STUN and TURN servers in the server argument.
+
+
+*/
+
+// const pc1 = new RTCPeerConnection(server);
+// const pc2 = new RTCPeerConnection(server);
+// let answer, offer;
+
+//Exchange Network information -> finding network interfaces and ports using ICE framework
+
+// pc1.onicecandidate = (e) => gotIceCandidate(pc1, e);
+// pc2.onicecandidate = (e) => gotIceCandidate(pc2, e);
+
+// pc2.ontrack = gotRemoteStream;
+// function gotIceCandidate(peer, event) {
+// 	console.log(peer);
+// 	if (!event.candidate) return;
+// 	getOtherPc(peer).addIceCandidate(event.candidate);
+// }
+
+// const createConnection = async () => {};
+
+// function getOtherPc(pc) {
+// 	return pc === pc1 ? pc2 : pc1;
+// }
+
+// function gotRemoteStream(e) {
+// 	if (remoteElement.srcObject === e) {
+// 		return;
+// 	}
+// 	remoteElement.srcObject = e;
+// }
+
+// const makeCall = async (connection) => {
+// 	onSucess(getVideoTrack(constraints));
+
+// 	getVideoTrack(constraints).then(async (stream) => {
+// 		// connection.addTrack(track, stream);
+// 		if (stream) socket.emit("offer", stream);
+// 	});
+// };
+
+/* 
+
+*/

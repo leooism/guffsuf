@@ -1,12 +1,12 @@
-import { onSucess, socket, peer } from "./script.js";
+import { renderVideo } from "./ui.js";
 let elem = document.querySelector(".video-grid");
 let videoControls = document.querySelector(".video-controls");
 
 const castBtn = document.querySelector(".cast");
 export const handleCastStream = function (stream) {
 	const video = document.createElement("video");
-	video.classList.add("pin");
-	onSucess(video, stream, "cast");
+	video.classList.add("mini");
+	renderVideo(video, stream, "cast");
 	return stream;
 };
 castBtn.addEventListener("click", function (e) {
@@ -19,9 +19,8 @@ castBtn.addEventListener("click", function (e) {
 });
 
 const fullScreenBtn = document.querySelector(".full-screen");
-
+1;
 function toggleFullscreen() {
-	// Enabling cursor disable feature
 	document.addEventListener("mousemove", (e) => {
 		videoControls.style.display = "flex";
 		if (addNoCursor) {
@@ -46,6 +45,9 @@ function toggleFullscreen() {
 		});
 	} else {
 		document.exitFullscreen();
+		document
+			.querySelector(".participants")
+			.classList.remove("hide-participants");
 	}
 }
 fullScreenBtn.addEventListener("click", function (e) {

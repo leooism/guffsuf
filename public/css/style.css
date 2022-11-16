@@ -79,6 +79,7 @@ body {
 	padding: 5px;
 	font-size: 15px;
 	color: #fff;
+	transition: all 0.4s linear;
 	/* height: 100%; */
 }
 .chat-message p {
@@ -133,21 +134,17 @@ form button {
 	gap: 0.5rem;
 	height: 100vh;
 	position: relative;
+	padding: 15px;
 }
 
 .video-box {
 	flex: 1;
 	width: 100%;
-	min-height: 475px;
+	min-height: 300px;
 	position: relative;
 	top: 0;
 	/* overflow-y: hidden; */
 }
-
-/* .video-grid video {
-	width: 300;
-	height: 300;
-} */
 
 .control-grid {
 	flex: 0.06;
@@ -155,16 +152,14 @@ form button {
 
 .pin {
 	border: 3px solid blue;
+	border-radius: 10px;
 	object-fit: cover;
 	width: 100%;
 	height: 100%;
 	max-height: 100vh;
 }
 .video-controls {
-	position: absolute;
-	top: 80%;
-	left: 50%;
-	transform: translateX(-50%);
+	flex: 0.1;
 	display: flex;
 	gap: 1rem;
 	z-index: 100;
@@ -176,7 +171,8 @@ form button {
 }
 
 .video-controls button,
-.maximize {
+.maximize,
+.bars {
 	border: none;
 	outline: none;
 	padding: 5px;
@@ -188,14 +184,7 @@ form button {
 	background-color: #fff;
 	cursor: pointer;
 }
-.maximize {
-	position: absolute;
-	left: 99%;
-	top: 2%;
-	z-index: 1;
-	transform: translateX(-100%);
-	/* display: none; */
-}
+
 .video-grid:hover .maximize {
 	display: block;
 }
@@ -220,13 +209,29 @@ button:has(> .bi-telephone-x) {
 }
 
 .participants {
-	flex: 0.19;
+	flex: 0.3;
 	margin: 0 auto;
 	z-index: 1;
 	display: flex;
+	gap: 0.5rem;
 	overflow-x: scroll;
 	max-width: 600px;
 	min-height: 100px;
+}
+.meeting-room {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.2rem;
+	justify-content: center;
+	align-items: center;
+	flex: 1;
+	max-height: 100vh;
+}
+.meeting-room .mini {
+	border-radius: 50%;
+	min-width: 300px;
+	min-height: 300px;
+	border: 2px solid rgb(14, 14, 128);
 }
 
 .participants::-webkit-scrollbar {
@@ -298,9 +303,6 @@ button:has(> .bi-telephone-x) {
 		top: -0.1px;
 	}
 }
-.pin {
-	/* display: b; */
-}
 
 .pin-cover {
 	position: absolute;
@@ -331,4 +333,20 @@ button:has(> .bi-telephone-x) {
 		min-width: 30px;
 		min-height: 30px;
 	}
+}
+
+.meeting-controls {
+	position: absolute;
+	width: 100%;
+	justify-content: space-between;
+	display: flex;
+	padding: 0 12px;
+	z-index: 1;
+}
+
+.modal {
+	position: relative;
+	top: 0;
+	left: 0;
+	z-index: 100;
 }

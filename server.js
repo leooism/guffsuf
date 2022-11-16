@@ -2,7 +2,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { v4: uuidv4 } = require("uuid");
-let rooms = [];
+let clients = [];
 const path = require("path");
 
 const app = express();
@@ -73,9 +73,9 @@ app.use("/", (req, res) => {
 
 io.on("connection", (socket) => {
 	socket.on("join-room", (roomid, userid) => {
-		participants.push({
-			type: "user",
-			id: userid,
+		clients.push({
+			rommid: roomid,
+			user: userid,
 		});
 		socket.join(roomid);
 		socket.to(roomid).emit("user-connected", userid);
@@ -83,15 +83,15 @@ io.on("connection", (socket) => {
 			socket.to(roomid).emit("chat", msg);
 		});
 
-		socket.on("disconnect", () => {
+		socket.on("disconnect-user", () => {
 			socket.broadcast.to(roomid).emit("disconnected", userid);
 		});
 		socket.on("typing", (id, msgLength) => {
 			socket.to(roomid).emit("typing", id, msgLength);
 		});
-		// socket.on("video-status", (status, userId) => {
-		// 	socket.broadcast.to(roomid).emit("video-status", status, userId);
-		// });
+		socket.on("video-status", (status, userId) => {
+			socket.to(roomid).emit("video-status", status, userId);
+		});
 	});
 });
 
