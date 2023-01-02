@@ -3,19 +3,13 @@ const sendBtn = document.querySelector(".send-btn");
 const videoGrid = document.querySelector(".video-box");
 const participantGrid = document.querySelector("#meeting-room");
 const chatMessage = document.querySelector(".msg-box");
-const feedback = document.querySelector(".feedback");
 const endCallBtn = document.querySelector(".end");
 const videoOfOnBtn = document.querySelector(".video-off");
 const micOffOnBtn = document.querySelector(".mute");
-const chatBtn = document.querySelector(".chatBtn");
-import { socket, client } from "./connection.js";
+import { socket, client, peer } from "./connection.js";
+import Chat from "./chat.js";
 let videoOn = true;
 let micOn = true;
-console.log("yo from ui");
-
-chatBtn.addEventListener("click", () => {
-	document.querySelector(".chat-grid").classList.toggle("hide");
-});
 
 inputBox.onkeydown = (e) => {
 	socket.emit("typing", id, e.target.value.trim().length);
@@ -25,9 +19,12 @@ micOffOnBtn.addEventListener("click", () => {
 	toggleMuteAudio(client.stream);
 });
 
+const leaveRoom = () => {
+	socket.emit("end-call", client.id);
+};
 endCallBtn.addEventListener("click", () => {
-	leaveRoom(document.getElementById(String(client.id)));
-	// window.location.assign("/feedback");
+	leaveRoom();
+	window.location.assign("/feedback");
 });
 
 videoOfOnBtn.addEventListener("click", () => {
@@ -91,7 +88,6 @@ const handleUserLeft = (videoElem) => {
 };
 const toggleStopVideo = function () {
 	if (!client.stream) return;
-	console.log(client);
 	client.stream.getTracks().forEach((track) => {
 		if (track.readyState === "live" && track.kind === "video") {
 			track.enabled = !track.enabled;
@@ -100,9 +96,9 @@ const toggleStopVideo = function () {
 		}
 	});
 	if (!videoOn) {
-		document.querySelector(".cover").classList.add("pin-cover");
+		// document.querySelector(".cover").classList.add("pin-cover");
 		videoOfOnBtn.innerHTML = `<svg
-		xmlns="http://www.w3.org/2000/svg"
+		xmlns="http://www.w3.org/TR/SVG"
 		width="16"
 		height="16"
 		fill="currentColor"
@@ -116,7 +112,8 @@ const toggleStopVideo = function () {
 	</svg>`;
 	}
 	if (videoOn) {
-		document.querySelector(".cover").classList.remove("pin-cover");
+		console.log("first");
+		// document.querySelector(".cover").classList.remove("pin-cover");
 
 		videoOfOnBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
 		<path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"/>
@@ -156,23 +153,21 @@ const toggleMuteAudio = function () {
 	  </svg>`;
 	}
 };
-
-socket.on("chat", (msg) => {
-	feedback.innerHTML = " ";
-	renderMessage(msg);
+videoGrid.addEventListener("click", function (e) {
+	if (e.target.classList.contains("pin")) {
+		let el = videoGrid.firstElementChild;
+		el.classList.remove("pin");
+		el.classList.add("mini");
+		participantGrid.append(el);
+		videoGrid.innerHTML = "";
+		participantGrid.classList.toggle("meeting-room");
+		participantGrid.classList.toggle("participants");
+		videoGrid.classList.toggle("hide");
+	}
 });
-
-socket.on("typing", (id, msgLength) => {
-	if (!msgLength > 0) return (feedback.innerHTML = "");
-	feedback.innerHTML = `<div class="dots-bars-4 messaging"></div>`;
-});
-function leaveRoom() {
-	// socket.emit("disconnect-user", client.id);
-	socket.emit("disconnect-user", client.id);
-}
-
 participantGrid.addEventListener("click", function (e) {
 	if (!e.target.classList.contains("mini")) return;
+
 	if (videoGrid.children.length !== 0) {
 		let el = videoGrid.firstElementChild;
 		el.classList.remove("pin");
@@ -181,17 +176,21 @@ participantGrid.addEventListener("click", function (e) {
 		videoGrid.innerHTML = "";
 		participantGrid.classList.toggle("meeting-room");
 		participantGrid.classList.toggle("participants");
-
 		videoGrid.classList.toggle("hide");
-
 		return;
 	}
 	const element = e.target;
-	e.target.remove();
+	console.log(element);
 	element.classList.remove("mini");
 	element.classList.add("pin");
+	videoGrid.append(element);
 	participantGrid.classList.toggle("participants");
 	participantGrid.classList.toggle("meeting-room");
-	videoGrid.append(element);
 	videoGrid.classList.toggle("hide");
+});
+Chat(socket);
+
+socket.on("user-disconnected", (userid) => {
+	console.log("vamos");
+	document.getElementById(String(userid)).remove();
 });

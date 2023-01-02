@@ -7,7 +7,9 @@ body {
 }
 .video-app {
 	display: flex;
+	padding: 0 10px;
 	flex-wrap: wrap;
+	height: 100vh;
 }
 
 .sender,
@@ -80,7 +82,7 @@ body {
 	font-size: 15px;
 	color: #fff;
 	transition: all 0.4s linear;
-	/* height: 100%; */
+	height: 100vh;
 }
 .chat-message p {
 	margin: 2px 0;
@@ -110,21 +112,11 @@ form button {
 	text-align: center;
 	color: #fff;
 }
-.video-grid,
+/* .video-grid,
 .chat-grid {
 	z-index: 1;
-	background: #232526; /* fallback for old browsers */
-	background: -webkit-linear-gradient(
-		to right,
-		#414345,
-		#232526
-	); /* Chrome 10-25, Safari 5.1-6 */
-	background: linear-gradient(
-		to right,
-		#414345,
-		#232526
-	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
+	background-color: rgba(0, 0, 0, 0.93);
+} */
 .video-grid {
 	flex: 1;
 	display: flex;
@@ -147,7 +139,50 @@ form button {
 }
 
 .control-grid {
+	padding: 5px 0;
 	flex: 0.06;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: column;
+	gap: 2rem;
+}
+.control-grid .control {
+	padding: 5px;
+	border-radius: 50%;
+	cursor: pointer;
+	position: relative;
+}
+.control-grid .control::after {
+	content: "";
+	z-index: -1;
+	position: absolute;
+	left: -10px;
+	top: 0;
+	border-radius: 0 10px 10px 0px;
+	height: 100%;
+	animation: show-bar 0.3s ease-in-out;
+	transition: all 0.4s ease-in-out;
+	background-color: hsl(324deg 100% 50%);
+	/* transform: translate(40%, -50%); */
+	display: none;
+	margin: 0 5px;
+	width: 60px;
+}
+@keyframes show-bar {
+	0% {
+		width: 0%;
+	}
+	100% {
+		width: 60px;
+	}
+}
+
+.control-grid .control:hover {
+	/* background-color: rgba(5, 5, 5, 0.855); */
+}
+.control-grid .control:hover::after {
+	display: block;
 }
 
 .pin {
@@ -159,11 +194,12 @@ form button {
 	max-height: 100vh;
 }
 .video-controls {
-	flex: 0.1;
+	position: fixed;
 	display: flex;
 	gap: 1rem;
 	z-index: 100;
 	max-width: 90%;
+	top: 80%;
 }
 
 .hide {
@@ -193,9 +229,10 @@ form button {
 	font-size: 20px;
 	padding: 5px;
 }
-button:has(> .bi-telephone-x) {
+
+/* button:has(> .bi-telephone-x) {
 	background-color: red;
-}
+} */
 .bi-telephone-x {
 	color: #fff;
 }
@@ -209,6 +246,7 @@ button:has(> .bi-telephone-x) {
 }
 
 .participants {
+	border: 1px solid red;
 	flex: 0.3;
 	margin: 0 auto;
 	z-index: 1;
@@ -219,13 +257,18 @@ button:has(> .bi-telephone-x) {
 	min-height: 100px;
 }
 .meeting-room {
+	max-width: 700px;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.2rem;
-	justify-content: center;
-	align-items: center;
+	gap: 0.6rem;
+	justify-content: space-evenly;
 	flex: 1;
+	padding: 20px;
 	max-height: 100vh;
+	overflow: scroll;
+}
+.meeting-room::-webkit-scrollbar {
+	display: none;
 }
 .meeting-room .mini {
 	border-radius: 50%;
@@ -324,24 +367,27 @@ button:has(> .bi-telephone-x) {
 	font-weight: 300;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (max-width: 600px) {
 	.video-grid {
 		display: flex;
 		flex-wrap: wrap;
+	}
+	.control-grid {
+		display: none;
 	}
 	.video-controls {
 		min-width: 30px;
 		min-height: 30px;
 	}
-}
-
-.meeting-controls {
-	position: absolute;
-	width: 100%;
-	justify-content: space-between;
-	display: flex;
-	padding: 0 12px;
-	z-index: 1;
+	.meeting-room {
+		display: flex;
+		gap: 1rem;
+	}
+	.meeting-room .mini {
+		min-width: 10px;
+		min-height: 10px;
+		border-radius: 5px;
+	}
 }
 
 .modal {

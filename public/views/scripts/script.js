@@ -1,5 +1,6 @@
 import { connectToNewUser, socket, client } from "./connection.js ";
 import { renderVideo } from "./ui.js";
+let PEERS = {};
 let localStream;
 console.log("Yooo from script");
 const constraints = {
@@ -10,20 +11,26 @@ const constraints = {
 };
 
 const getVideoTrack = async function (options) {
-	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		return await navigator.mediaDevices.getUserMedia(options);
+	} else {
+		return navigator.webkitGetUserMedia(options);
+	}
 };
 
-getVideoTrack(constraints).then(async (stream) => {
-	localStream = await stream;
-	client.stream = localStream;
-	const video = document.createElement("video");
-	video.setAttribute("id", client.id);
-	video.classList.add("mini");
-	renderVideo(video, localStream);
-});
+getVideoTrack(constraints)
+	.then(async (stream) => {
+		localStream = await stream;
+		client.stream = localStream;
+		const video = document.createElement("video");
+		video.setAttribute("id", client.id);
+		video.classList.add("mini");
+		renderVideo(video, localStream);
+	})
+	.catch((err) => {
+		alert(err);
+	});
 
 socket.on("user-connected", async (id) => {
-	console.log("User is connected");
 	connectToNewUser(localStream, id);
 });

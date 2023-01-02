@@ -7,10 +7,9 @@ const path = require("path");
 
 const app = express();
 app.use(express.urlencoded());
-let participants = [];
 app.set("view engine", "ejs");
-app.set("views", "./public");
-app.use(express.static(path.join(__dirname, "public")));
+app.set("views", "./public/views");
+app.use(express.static(path.join(__dirname, "public/views")));
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -80,17 +79,21 @@ io.on("connection", (socket) => {
 		socket.join(roomid);
 		socket.to(roomid).emit("user-connected", userid);
 		socket.on("chat", (msg) => {
-			socket.to(roomid).emit("chat", msg);
+			io.to(roomid).emit("chat", msg);
 		});
 
-		socket.on("disconnect-user", () => {
-			socket.broadcast.to(roomid).emit("disconnected", userid);
+		socket.on("disconnect", () => {
+			socket.to(roomid).emit("user-disconnected", userid);
+		});
+
+		socket.on("end-call", (uid) => {
+			socket.to(roomid).emit("user-disconnected", uid);
 		});
 		socket.on("typing", (id, msgLength) => {
-			socket.to(roomid).emit("typing", id, msgLength);
+			io.to(roomid).emit("typing", id, msgLength);
 		});
 		socket.on("video-status", (status, userId) => {
-			socket.to(roomid).emit("video-status", status, userId);
+			io.to(roomid).emit("video-status", status, userId);
 		});
 	});
 });
