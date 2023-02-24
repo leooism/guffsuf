@@ -5,12 +5,6 @@
 body {
 	z-index: 1;
 }
-.video-app {
-	display: flex;
-	padding: 0 10px;
-	flex-wrap: wrap;
-	height: 100vh;
-}
 
 .sender,
 .reciever {
@@ -117,42 +111,7 @@ form button {
 	z-index: 1;
 	background-color: rgba(0, 0, 0, 0.93);
 } */
-.video-grid {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
-	height: 100vh;
-	position: relative;
-	padding: 15px;
-}
 
-.video-box {
-	flex: 1;
-	width: 100%;
-	min-height: 300px;
-	position: relative;
-	top: 0;
-	/* overflow-y: hidden; */
-}
-
-.control-grid {
-	padding: 5px 0;
-	flex: 0.06;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	flex-direction: column;
-	gap: 2rem;
-}
-.control-grid .control {
-	padding: 5px;
-	border-radius: 50%;
-	cursor: pointer;
-	position: relative;
-}
 .control-grid .control::after {
 	content: "";
 	z-index: -1;
@@ -184,14 +143,16 @@ form button {
 .control-grid .control:hover::after {
 	display: block;
 }
-
+.video-box {
+	height: 350px;
+	width: 100%;
+}
 .pin {
-	border: 3px solid blue;
+	border-radius: 0;
 	border-radius: 10px;
 	object-fit: cover;
 	width: 100%;
 	height: 100%;
-	max-height: 100vh;
 }
 .video-controls {
 	position: fixed;
@@ -199,35 +160,11 @@ form button {
 	gap: 1rem;
 	z-index: 100;
 	max-width: 90%;
-	top: 80%;
+	top: 85%;
 }
 
 .hide {
 	display: none;
-}
-
-.video-controls button,
-.maximize,
-.bars {
-	border: none;
-	outline: none;
-	padding: 5px;
-	min-width: 50px;
-	border-radius: 50%;
-	min-height: 50px;
-
-	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-	background-color: #fff;
-	cursor: pointer;
-}
-
-.video-grid:hover .maximize {
-	display: block;
-}
-.video-controls button bi {
-	cursor: pointer;
-	font-size: 20px;
-	padding: 5px;
 }
 
 /* button:has(> .bi-telephone-x) {
@@ -237,50 +174,17 @@ form button {
 	color: #fff;
 }
 
-.mini {
-	max-width: 120px;
-	max-height: 120px;
-	object-fit: cover;
-	border-radius: 10px;
-	cursor: pointer;
-}
-
-.participants {
-	border: 1px solid red;
-	flex: 0.3;
-	margin: 0 auto;
-	z-index: 1;
-	display: flex;
-	gap: 0.5rem;
-	overflow-x: scroll;
-	max-width: 600px;
-	min-height: 100px;
-}
-.meeting-room {
-	max-width: 700px;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.6rem;
-	justify-content: space-evenly;
-	flex: 1;
-	padding: 20px;
-	max-height: 100vh;
-	overflow: scroll;
-}
 .meeting-room::-webkit-scrollbar {
 	display: none;
-}
-.meeting-room .mini {
-	border-radius: 50%;
-	min-width: 300px;
-	min-height: 300px;
-	border: 2px solid rgb(14, 14, 128);
 }
 
 .participants::-webkit-scrollbar {
 	display: none;
 }
 
+.participants {
+	display: flex;
+}
 .hide-participants {
 	display: none;
 	cursor: none;
@@ -289,6 +193,7 @@ form button {
 .no-cursor {
 	cursor: none;
 }
+
 .messaging {
 	display: block;
 }
@@ -365,29 +270,6 @@ form button {
 	border-bottom: 1px solid gray;
 	padding: 0 0 10px 0;
 	font-weight: 300;
-}
-
-@media screen and (max-width: 600px) {
-	.video-grid {
-		display: flex;
-		flex-wrap: wrap;
-	}
-	.control-grid {
-		display: none;
-	}
-	.video-controls {
-		min-width: 30px;
-		min-height: 30px;
-	}
-	.meeting-room {
-		display: flex;
-		gap: 1rem;
-	}
-	.meeting-room .mini {
-		min-width: 10px;
-		min-height: 10px;
-		border-radius: 5px;
-	}
 }
 
 .modal {

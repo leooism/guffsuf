@@ -18,8 +18,6 @@
 			crossorigin="anonymous"
 		/>
 
-		<link href="/css/style.css" rel="stylesheet" />
-
 		<script
 			defer
 			src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
@@ -40,15 +38,22 @@
 		<script defer src="/scripts/connection.js" type="module"></script>
 		<script defer src="/scripts/script.js" type="module"></script>
 		<script defer src="/scripts/client-side.js" type="module"></script>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link href="/css/style.css" rel="stylesheet" />
+
 		<!-- 
 		The code which is not set to defer will 
 		test for defer code which runs first
+
+
 	 --></head>
 
 	<body>
-		<div class="video-app">
-			<div class="control-grid">
-				<div class="control">
+		<div class="flex">
+			<div
+				class="control-grid hidden md:flex p-2 justify-start items-center flex-col gap-10"
+			>
+				<button class="control rounded-full relative cursor-pointer p-2">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="30"
@@ -64,8 +69,10 @@
 							d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"
 						/>
 					</svg>
-				</div>
-				<div class="control">
+				</button>
+				<div
+					class="control rounded-full relative cursor-pointer hover:bg-black-200"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="30"
@@ -82,7 +89,9 @@
 						/>
 					</svg>
 				</div>
-				<div class="control">
+				<div
+					class="control rounded-full relative cursor-pointer hover:bg-black-200"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="30"
@@ -99,7 +108,9 @@
 						/>
 					</svg>
 				</div>
-				<div class="control">
+				<div
+					class="control rounded-full relative cursor-pointer hover:bg-black-200"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						height="30"
@@ -114,14 +125,45 @@
 					</svg>
 				</div>
 			</div>
-			<div class="video-grid">
-				<div class="video-box hide">
+			<div
+				class="flex-1 video-grid flex flex-col items-center gap-[0.1rem] h-[100vh] md:p-[15px]"
+			>
+				<div
+					class="hidden md:w-full bg-white-500 md:flex flex-row gap-2 items-center"
+				>
+					<div class="bg-gray-200 flex items-center gap-2">
+						<div class="flex items-center justify-between gap-2">
+							<h1 class="rounded-full p-1 shadow-2xl bg-black-200">🔒</h1>
+							<span class="text-sm"
+								>Meeting hi:
+								<b class="text-blue-500"
+									>The vamos argentina is the world</b
+								></span
+							>
+						</div>
+						<div class="flex items-center justify-between gap-2">
+							<h1 class="rounded-full p-1 bg-black-200">
+								👯 Total Participants
+							</h1>
+							<span class="text-sm text-bold">12</span>
+						</div>
+					</div>
+					<div class="bg-red-600 flex items-center rounded-sm gap-1">
+						<h1 class="rounded-full p-1 shadow-2xl bg-black-00">🅰️</h1>
+						<span class="text-sm text-white px-2">Bidhan Bhandari</span>
+					</div>
+				</div>
+				<div class="video-box hidden">
 					<!-- <div class="cover"></div> -->
 				</div>
-				<div id="meeting-room" class="meeting-room"></div>
-
-				<div class="video-controls">
-					<button class="mute">
+				<div
+					id="meeting-room"
+					class="flex-1 meeting-room w-full flex md:flex-row flex-wrap justify-center items-center overflow-y-scroll"
+				></div>
+				<div class="video-controls flex gap-3">
+					<button
+						class="mute border-0 outline-0 p-[5px] min-w-[50px] rounded-full shadow-lg cursor-pointer bg-white min-h-[50px] flex justify-center items-center"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -138,7 +180,9 @@
 							/>
 						</svg>
 					</button>
-					<button class="video-off">
+					<button
+						class="video-off border-0 outline-0 p-[5px] min-w-[50px] rounded-full shadow-lg cursor-pointer bg-white min-h-[50px] flex justify-center items-center"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -153,7 +197,9 @@
 							/>
 						</svg>
 					</button>
-					<button class="cast">
+					<button
+						class="cast border-0 outline-0 p-[5px] min-w-[50px] rounded-full shadow-lg cursor-pointer bg-white min-h-[50px] flex justify-center items-center"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -170,7 +216,9 @@
 							/>
 						</svg>
 					</button>
-					<button class="chatBtn">
+					<button
+						class="chatBtn border-0 outline-0 p-[5px] min-w-[50px] rounded-full shadow-lg cursor-pointer bg-white min-h-[50px] flex justify-center items-center"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -184,7 +232,9 @@
 							/>
 						</svg>
 					</button>
-					<button class="end">
+					<button
+						class="end border-0 outline-0 p-[5px] min-w-[50px] rounded-full shadow-lg cursor-pointer bg-white min-h-[50px] bg-red-900 flex justify-center items-center"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -205,7 +255,7 @@
 				</div>
 			</div>
 
-			<div class="chat-grid hide">
+			<div class="chat-grid hidden">
 				<div class="chat-message">
 					<h5 class="chat-header">Live chat</h5>
 

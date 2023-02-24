@@ -1,19 +1,21 @@
+import { client } from "./connection.js";
+
 let elem = document.querySelector(".video-grid");
 let videoControls = document.querySelector(".video-controls");
 
 const castBtn = document.querySelector(".cast");
 export const handleCastStream = function (stream) {
-	const video = document.createElement("video");
-	video.classList.add("mini");
-	// renderVideo(video, stream, "cast");
-	// for (const [p, t] of Object.entries(peer.connections)) {
-	// 	t[0]._remoteStream = stream;
-	// }
-	// console.log(typeof peer.connection);
-	// peer.connection.forEach((con) => {
-	// 	con.remoteStream = stream;
-	// });
-	return stream;
+	navigator.mediaDevices.getDisplayMedia().then((stream) => {
+		const videoTrack = stream.getVideoTracks()[0];
+		client.sender &&
+			client.sender
+				.getSenders()
+				.find((sender) => {
+					return sender.track.kind === "video";
+				})
+				.replaceTrack(videoTrack);
+	});
+	// return stream;
 };
 castBtn.addEventListener("click", function (e) {
 	handleCastStream(null);

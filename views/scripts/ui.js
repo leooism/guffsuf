@@ -1,19 +1,16 @@
+import { socket, client, peer } from "./connection.js";
+
+// ui__elements--------------------
+
 const inputBox = document.querySelector("#input-box");
-const sendBtn = document.querySelector(".send-btn");
 const videoGrid = document.querySelector(".video-box");
 const participantGrid = document.querySelector("#meeting-room");
-const chatMessage = document.querySelector(".msg-box");
 const endCallBtn = document.querySelector(".end");
 const videoOfOnBtn = document.querySelector(".video-off");
 const micOffOnBtn = document.querySelector(".mute");
-import { socket, client, peer } from "./connection.js";
-import Chat from "./chat.js";
+
 let videoOn = true;
 let micOn = true;
-
-inputBox.onkeydown = (e) => {
-	socket.emit("typing", id, e.target.value.trim().length);
-};
 
 micOffOnBtn.addEventListener("click", () => {
 	toggleMuteAudio(client.stream);
@@ -22,6 +19,7 @@ micOffOnBtn.addEventListener("click", () => {
 const leaveRoom = () => {
 	socket.emit("end-call", client.id);
 };
+
 endCallBtn.addEventListener("click", () => {
 	leaveRoom();
 	window.location.assign("/feedback");
@@ -30,73 +28,38 @@ endCallBtn.addEventListener("click", () => {
 videoOfOnBtn.addEventListener("click", () => {
 	toggleStopVideo(client.stream);
 });
-
-sendBtn.addEventListener("click", (e) => {
-	sendMessage();
-	e.preventDefault();
-});
-const sendMessage = () => {
-	const msg = inputBox.value;
-	if (msg.trim().length === 0) return;
-	const msgBox = document.createElement("p");
-	msgBox.classList.add("sender");
-	const p = document.createElement("span");
-	p.classList.add("sender-msg");
-	p.innerText = msg;
-	msgBox.appendChild(p);
-	chatMessage.appendChild(msgBox);
-	socket.emit("chat", msg);
-	inputBox.value = "";
-};
-
-const renderMessage = (msg) => {
-	const msgBox = document.createElement("p");
-	msgBox.classList.add("reciever");
-	const p = document.createElement("p");
-	p.classList.add("reciever-msg");
-	p.innerText = msg;
-	msgBox.appendChild(p);
-
-	chatMessage.appendChild(msgBox);
-};
-export const renderVideo = async (videoEle, stream, type = undefined) => {
-	if (type === "cast") {
-		document.getElementById(String(client.id)).srcObject = stream;
-		stream.getVideoTracks().forEach((track) => {
-			track.addEventListener("ended", () => {
-				document.getElementById(String(client.id)).srcObject = client.stream;
-			});
-		});
-		return;
-	}
-
+// const videoStyle = mirrored ? { ...style, transform: `${style.transform || ""} scaleX(-1)` } : style;
+export const renderVideo = async (videoEle, stream) => {
 	videoEle.srcObject = stream;
+	videoEle.style.transform = "scaleX(-1)";
 	videoEle.addEventListener("loadedmetadata", (e) => {
 		videoEle.play();
 	});
+	// const canvas = document.createElement("canvas");
+	// const ctx = canvas.getContext("2d");
+	// videoEle.addEventListener("play", function () {
+	// 	canvas.width = videoEle.videoWidth;
+	// 	canvas.height = videoEle.videoHeight;
+	// 	setInterval(function () {
+	// 		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+	// 		ctx.translate(canvas.width, 0);
+	// 		ctx.scale(-1, 1);
+	// 		ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+	// 		ctx.setTransform(1, 0, 0, 1, 0, 0);
+	// 		videoEle.srcObject = canvas.captureStream();
+	// 	}, 16);
+	// });
 	participantGrid.appendChild(videoEle);
 };
 
-const handleUserLeft = (videoElem) => {
-	const stream = videoElem.srcObject;
-	const tracks = stream.getTracks();
-	tracks.forEach((track) => {
-		track.stop();
-	});
-	videoElem.srcObject = null;
-	videoElem.remove();
-};
 const toggleStopVideo = function () {
 	if (!client.stream) return;
 	client.stream.getTracks().forEach((track) => {
-		if (track.readyState === "live" && track.kind === "video") {
-			track.enabled = !track.enabled;
-			socket.emit("video-status", track.enabled, client.id);
-			videoOn = !videoOn;
-		}
+		track.enabled = !track.enabled;
+		videoOn = !videoOn;
 	});
+	// navigator.mediaDevices.getUserMedia({ video: true }).the;
 	if (!videoOn) {
-		// document.querySelector(".cover").classList.add("pin-cover");
 		videoOfOnBtn.innerHTML = `<svg
 		xmlns="http://www.w3.org/TR/SVG"
 		width="16"
@@ -112,12 +75,14 @@ const toggleStopVideo = function () {
 	</svg>`;
 	}
 	if (videoOn) {
-		console.log("first");
+		document
+			.getElementById(String(client.id))
+			.srcObject.getTracks()
+			.forEach((track) => {});
 		// document.querySelector(".cover").classList.remove("pin-cover");
-
 		videoOfOnBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
-		<path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"/>
-	  </svg>`;
+			<path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"/>
+		  </svg>`;
 	}
 };
 
@@ -126,7 +91,7 @@ const toggleMuteAudio = function () {
 	client.stream.getTracks().forEach((track) => {
 		if (track.readyState === "live" && track.kind === "audio") {
 			track.enabled = !track.enabled;
-			micOn = !micOn;
+			// micOn = track.en;
 		}
 	});
 	if (!micOn) {
@@ -153,44 +118,50 @@ const toggleMuteAudio = function () {
 	  </svg>`;
 	}
 };
+
 videoGrid.addEventListener("click", function (e) {
 	if (e.target.classList.contains("pin")) {
 		let el = videoGrid.firstElementChild;
 		el.classList.remove("pin");
-		el.classList.add("mini");
+		el.className = "";
+		el.className =
+			"mini md:rounded-full  w-64 h-64 md:w-64 md:h-64 object-cover";
+
 		participantGrid.append(el);
 		videoGrid.innerHTML = "";
 		participantGrid.classList.toggle("meeting-room");
 		participantGrid.classList.toggle("participants");
-		videoGrid.classList.toggle("hide");
+		videoGrid.classList.toggle("hidden");
 	}
 });
 participantGrid.addEventListener("click", function (e) {
 	if (!e.target.classList.contains("mini")) return;
-
 	if (videoGrid.children.length !== 0) {
+		// switching participants
 		let el = videoGrid.firstElementChild;
 		el.classList.remove("pin");
 		el.classList.add("mini");
+		el.className =
+			"mini md:rounded-full w-64 h-64 md:w-64 md:h-64 object-cover";
 		participantGrid.append(el);
 		videoGrid.innerHTML = "";
 		participantGrid.classList.toggle("meeting-room");
 		participantGrid.classList.toggle("participants");
-		videoGrid.classList.toggle("hide");
+		videoGrid.classList.toggle("hidden");
 		return;
 	}
 	const element = e.target;
-	console.log(element);
 	element.classList.remove("mini");
+	element.className = "";
 	element.classList.add("pin");
 	videoGrid.append(element);
 	participantGrid.classList.toggle("participants");
 	participantGrid.classList.toggle("meeting-room");
-	videoGrid.classList.toggle("hide");
+	videoGrid.classList.toggle("hidden");
 });
-Chat(socket);
+
+// Chat(socket);
 
 socket.on("user-disconnected", (userid) => {
-	console.log("vamos");
 	document.getElementById(String(userid)).remove();
 });
